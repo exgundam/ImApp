@@ -17,7 +17,7 @@ import com.kk2.user.entity.Request.Content;
 import com.kk2.user.entity.Request.DeviceAuthRsp;
 import com.kk2.user.entity.Request.WeChatInfo;
 import com.kk2.user.entity.other.ChatErrorRsp;
-import com.kk2.user.entity.response.FriendPushNoticeRsp;
+import com.kk2.user.entity.response.ChatRoomMembersRsp;
 import com.kk2.user.entity.response.GetWeChatRsp;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.widget.MyAppBar;
@@ -124,10 +124,10 @@ public class LoginActivity extends BaseTitleActivity {
 
         @Override
         public <T> void onMessage(String message, T data) {
-
             //message = message.replace("\\", "");
-            MyLog.e("onMessage(String, T):" + message.replace("\\", ""));
-            BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
+           // String message2=message.replace("\\", "");
+            MyLog.e("onMessage(String, T):"+message);
+            BaseChatRsp baseResponse= JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals(ChatMsgType.DeviceAuthRsp)) {
                 DeviceAuthRsp deviceAuthRsp = JSON.parseObject(baseResponse.message, DeviceAuthRsp.class);
                 UserInfo.AccessToken = deviceAuthRsp.AccessToken;
@@ -172,22 +172,25 @@ public class LoginActivity extends BaseTitleActivity {
                     // Log.e("request===", JSON.toJSONString(getFriend));
                     WebSocketHandler.getDefault().send(JSON.toJSONString(getFriend));
 
-                    BaseChatReq getChatGroup = new BaseChatReq();
-                    getChatGroup.MsgType = ChatMsgType.TriggerChatroomPushTask;
-                    getChatGroup.Content = new Content();
-                    getChatGroup.Content.WeChatId = UserInfo.weChatId;
-                    // WebSocketHandler.getDefault().send(JSON.toJSONString(getChatGroup));*/
                 }
 
             }else if (baseResponse.msgType.equals(ChatMsgType.FriendPushNotice)) {
-                FriendPushNoticeRsp friendPushNoticeRsp = JSON.parseObject(baseResponse.message, FriendPushNoticeRsp.class);
+                BaseChatReq getChatGroup = new BaseChatReq();
+                getChatGroup.MsgType = ChatMsgType.TriggerChatroomPushTask;
+                getChatGroup.Content = new Content();
+                getChatGroup.Content.WeChatId = UserInfo.weChatId;
+                WebSocketHandler.getDefault().send(JSON.toJSONString(getChatGroup));
+               /* FriendPushNoticeRsp friendPushNoticeRsp = JSON.parseObject(baseResponse.message, FriendPushNoticeRsp.class);
                 UserInfo.friendPushNoticeRsp=friendPushNoticeRsp;
                 MainActivity.startActivity(LoginActivity.this,friendPushNoticeRsp);
-                finish();
+                finish();*/
             }else if (baseResponse.msgType.equals(ChatMsgType.ChatroomPushNotice)){
 
 
             }else if (baseResponse.msgType.equals(ChatMsgType.ChatRoomMembersNotice)){
+                MyLog.e("陈工此时");
+                ChatRoomMembersRsp rsp=JSON.parseObject(baseResponse.message, ChatRoomMembersRsp.class);
+                MyLog.e("陈工此时"+rsp.getWeChatId()+"---"+rsp.getMembers().size());
 
             }else if (baseResponse.msgType.equals(ChatMsgType.Error)) {
                 ChatErrorRsp chatErrorRsp = JSON.parseObject(baseResponse.message, ChatErrorRsp.class);

@@ -1,7 +1,9 @@
 package com.zhangke.websocket.response;
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.zhangke.websocket.dispatcher.IResponseDispatcher;
 import com.zhangke.websocket.dispatcher.ResponseDelivery;
 
@@ -29,7 +31,13 @@ public class TextResponse implements Response<String> {
 
     @Override
     public void onResponse(IResponseDispatcher dispatcher, ResponseDelivery delivery) {
-        responseText = responseText.replace("\\n", "");
+        //responseText = responseText.replace("\\n", "");
+        try {
+            responseText= JSON.parse(responseText).toString();
+        }catch (Exception e){
+            Log.e("解析错误",e.getMessage());
+        }
+
         dispatcher.onMessage(responseText, delivery);
         release();
     }
