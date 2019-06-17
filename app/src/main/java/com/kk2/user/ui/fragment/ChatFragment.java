@@ -15,11 +15,13 @@ import com.kk2.user.base.BaseTitleFragment;
 import com.kk2.user.core.ChatMsgType;
 import com.kk2.user.entity.other.ChatEntity;
 import com.kk2.user.entity.response.FriendTalkRsp;
+import com.kk2.user.entity.response.FriendsBean;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.activity.AddFriendActivity;
 import com.kk2.user.ui.activity.ChatDetailActivity;
 import com.kk2.user.ui.adapter.ChatListAdapter;
 import com.kk2.user.ui.widget.MyAppBar;
+import com.kk2.user.util.ChatUtils;
 import com.kk2.user.util.MyUtils;
 import com.zhangke.websocket.SimpleListener;
 import com.zhangke.websocket.SocketListener;
@@ -110,14 +112,18 @@ public class ChatFragment extends BaseTitleFragment implements ChatListAdapter.L
     }
 
     private void receiveMsg(FriendTalkRsp rsp) {
-        int pos=getChatPos(rsp.getFriendId());
-        if ( pos>= 0) {
+        int pos = getChatPos(rsp.getFriendId());
+        if (pos >= 0) {
             ChatEntity entity = mMessageList.get(pos);
             entity.text = MyUtils.Base64DecodeUtf8(rsp.getContent());
             entity.friendId = rsp.getFriendId();
             entity.name = rsp.getFriendId();
+            FriendsBean friendsBean= ChatUtils.getFriendEntity(entity.friendId);
+            if (friendsBean!=null){
+                entity.avatar =friendsBean.getAvatar();
+            }
             entity.time = "22：00";
-            if (!entity.friendId.equals(UserInfo.inChatId)){
+            if (!entity.friendId.equals(UserInfo.inChatId)) {
                 entity.unReadCount++;
             }
             mMessageList.remove(entity);
@@ -127,9 +133,13 @@ public class ChatFragment extends BaseTitleFragment implements ChatListAdapter.L
             ChatEntity entity = new ChatEntity();
             entity.name = rsp.getFriendId();
             entity.friendId = rsp.getFriendId();
+            FriendsBean friendsBean= ChatUtils.getFriendEntity(entity.friendId);
+            if (friendsBean!=null){
+                entity.avatar =friendsBean.getAvatar();
+            }
             entity.time = "22：00";
             entity.text = MyUtils.Base64DecodeUtf8(rsp.getContent());
-            entity.unReadCount=1;
+            entity.unReadCount = 1;
             mMessageList.add(0, entity);
         }
         mChatListAdapter.notifyDataSetChanged();

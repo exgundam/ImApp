@@ -181,6 +181,7 @@ public class LoginActivity extends BaseTitleActivity {
 
             }else if (baseResponse.msgType.equals(ChatMsgType.FriendPushNotice)) {
                 FriendPushNoticeRsp friendPushNoticeRsp = JSON.parseObject(baseResponse.message, FriendPushNoticeRsp.class);
+                UserInfo.friendPushNoticeRsp=friendPushNoticeRsp;
                 MainActivity.startActivity(LoginActivity.this,friendPushNoticeRsp);
                 finish();
             }else if (baseResponse.msgType.equals(ChatMsgType.ChatroomPushNotice)){

@@ -5,8 +5,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ahuo.tool.imageloader.GlideLoaderUtil;
+import com.kk2.user.MyApp;
 import com.kk2.user.R;
 import com.kk2.user.entity.other.ChatEntity;
 
@@ -41,6 +44,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         final ChatEntity entity = mDataList.get(i);
         viewHolder.tvTitle.setText(entity.name);
         viewHolder.tvContent.setText(entity.text);
+        GlideLoaderUtil.loadCircleImage(MyApp.getInstance().getApplicationContext(),entity.avatar,-1,viewHolder.ivAvatar,true);
         int unReadCount = entity.unReadCount;
         viewHolder.tvUpReadCount.setVisibility(unReadCount > 0 ? View.VISIBLE : View.INVISIBLE);
         viewHolder.tvUpReadCount.setText(unReadCount + "");
@@ -70,6 +74,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         TextView tvContent;
         @BindView(R.id.tvUpReadCount)
         TextView tvUpReadCount;
+        @BindView(R.id.ivAvatar)
+        ImageView ivAvatar;
         View itemView;
 
         public ViewHolder(View itemView) {

@@ -16,7 +16,7 @@
             android:id="@+id/ivAvatar"
             android:layout_width="@dimen/dp_60"
             android:layout_height="@dimen/dp_60"
-            android:background="@color/colorPrimary" />
+            />
         <TextView
             android:id="@+id/tvUpReadCount"
             android:layout_alignParentRight="true"
