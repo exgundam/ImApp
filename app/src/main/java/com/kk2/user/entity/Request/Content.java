@@ -1,12 +1,15 @@
 package com.kk2.user.entity.Request;
 
 public class Content {
-    //login
+    //auth
     public String AuthType;
     public String Credential;
     //getWeChat
     public String AccountType;
     public String UnionId;
+    //login
+    public String SupplierId;
+    public WeChatInfo[] WeChats;
     //getFriendList
     public String WeChatId;
     //addFriend
