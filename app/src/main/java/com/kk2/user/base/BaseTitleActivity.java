@@ -17,7 +17,7 @@ public abstract class BaseTitleActivity<P extends BasePresenter> extends BaseAct
         super.initWindows();
         mLLAppbar.setVisibility(View.VISIBLE);
         mAppBar.setTitleConfig(getTitleViewConfig());
-        setSupportActionBar(mAppBar);
+//        setSupportActionBar(mAppBar);
         //不显示Toolbar title
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);

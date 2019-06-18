@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.ahuo.tool.util.MyLog;
 import com.alibaba.fastjson.JSON;
@@ -24,6 +26,9 @@ import com.kk2.user.entity.response.FriendTalkRsp;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.adapter.MessageDetailAdapter;
 import com.kk2.user.ui.widget.MyAppBar;
+import com.kk2.user.ui.widget.RecordButton;
+import com.kk2.user.ui.widget.StateButton;
+import com.kk2.user.util.ChatUiHelper;
 import com.kk2.user.util.MyUtils;
 import com.zhangke.websocket.SimpleListener;
 import com.zhangke.websocket.SocketListener;
@@ -39,14 +44,32 @@ import butterknife.BindView;
 
 public class ChatDetailActivity extends BaseTitleActivity implements View.OnClickListener {
 
-    @BindView(R.id.btn_message_send)
-    Button mBtnSend;
+    @BindView(R.id.bt_message_send)
+    StateButton mBtnSend;
 
     @BindView(R.id.et_message_input)
-    EditText mMsgInput;
+    EditText mEtMsgInput;
 
-    @BindView(R.id.message_detail_recycle_list)
+    @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.llContent)
+    LinearLayout mLlContent;
+    @BindView(R.id.ivEmo)
+    ImageView mIvEmo;
+    @BindView(R.id.rlBottomLayout)
+    RelativeLayout mRlBottomLayout;
+    @BindView(R.id.llEmotion)
+    LinearLayout mLlEmotion;
+    @BindView(R.id.llAdd)
+    LinearLayout mLlAdd;
+    @BindView(R.id.ivAdd)
+    ImageView mIvAdd;
+    @BindView(R.id.btnAudio)
+    RecordButton mBtnAudio;
+    @BindView(R.id.ivAudio)
+    ImageView mIvAudio;
+
 
     public static final String INTENT_ENTITY = "intent_entity";
     public static final int page_count = 10;
@@ -63,23 +86,65 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
     private int j = 0;
 
     private void initRecycle() {
-        //1)添加布局管理器
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(layoutManager);
+        //mBtnAudio
 
+        //
         //2)配置Adapter
-        mList = genData();
+        mList = new ArrayList<>();
         mAdapter = new MessageDetailAdapter(this, mList);
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener(new MessageDetailAdapter.ClickListener() {
+      /*  mAdapter.setOnItemClickListener(new MessageDetailAdapter.ClickListener() {
             @Override
             public void onItemClick(View v, int position, List<MessageChatEntity> items) {
 
             }
+        });*/
+        //  mRecyclerView.scrollToPosition(mList.size() - 1);
+//1)添加布局管理器
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);
+        //底部布局弹出,聊天列表上滑
+        final ChatUiHelper mUiHelper = ChatUiHelper.with(this);
+        mUiHelper.bindContentLayout(mLlContent)
+                .bindttToSendButton(mBtnSend)
+                .bindEditText(mEtMsgInput)
+                .bindBottomLayout(mRlBottomLayout)
+                .bindEmojiLayout(mLlEmotion)
+                .bindAddLayout(mLlAdd)
+                .bindToAddButton(mIvAdd)
+                .bindToEmojiButton(mIvEmo)
+                .bindAudioBtn(mBtnAudio)
+                .bindAudioIv(mIvAudio)
+                .bindEmojiData();
+
+        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (bottom < oldBottom) {
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mAdapter.getItemCount() > 0) {
+                                mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+                            }
+                        }
+                    });
+                }
+            }
         });
-        mRecyclerView.scrollToPosition(mList.size() - 1);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        //点击空白区域关闭键盘
+        mRecyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                mUiHelper.hideBottomLayout(false);
+                mUiHelper.hideSoftInput();
+                mEtMsgInput.clearFocus();
+                mIvEmo.setImageResource(R.drawable.ic_emoji);
+                return false;
+            }
+        });
+        /*mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -112,7 +177,7 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
                     MyLog.e("direction -1: false底部");
                 }
             }
-        });
+        });*/
 
     }
 
@@ -139,8 +204,8 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_message_send: //发送
-                String inputContent = mMsgInput.getText().toString();
+            case R.id.bt_message_send: //发送
+                String inputContent = mEtMsgInput.getText().toString();
                 if (!TextUtils.isEmpty(inputContent)) {
                     MessageChatEntity messageBean = new MessageChatEntity();
                     messageBean.setDate(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
@@ -151,11 +216,11 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
                     mList.add(messageBean);
                     mAdapter.notifyDataSetChanged();
 
-                    mMsgInput.clearFocus();
-                    mMsgInput.setSelected(false);
-                    mMsgInput.setText("");
+                    mEtMsgInput.clearFocus();
+                    mEtMsgInput.setSelected(false);
+                    mEtMsgInput.setText("");
                     mRecyclerView.scrollToPosition(mList.size() - 1);
-                    MyUtils.hideSoftKeyboard(this, mMsgInput);
+                    MyUtils.hideSoftKeyboard(this, mEtMsgInput);
                     //TalkToFriendTask
                     sendMsg(inputContent);
                 }
@@ -186,7 +251,7 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
         mAdapter.notifyDataSetChanged();
 
         mRecyclerView.scrollToPosition(mList.size() - 1);
-       // MyUtils.hideSoftKeyboard(this, mMsgInput);
+        // MyUtils.hideSoftKeyboard(this, mMsgInput);
     }
 
     @Override
@@ -212,13 +277,13 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
     public void onDestroy() {
         super.onDestroy();
         WebSocketHandler.getDefault().removeListener(socketListener);
-        UserInfo.inChatId=null;
+        UserInfo.inChatId = null;
     }
 
     @Override
     public MyAppBar.TitleConfig getTitleViewConfig() {
         mChatEntity = getIntent().getParcelableExtra(INTENT_ENTITY);
-        UserInfo.inChatId=mChatEntity.friendId;
+        UserInfo.inChatId = mChatEntity.friendId;
         MyLog.e(mChatEntity.name);
         return buildDefaultConfig(mChatEntity.name);
     }
@@ -256,16 +321,11 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
 
         @Override
         public <T> void onMessage(String message, T data) {
-            //String  message2=message.replaceAll("\"","")+"---";
-            message = message.replace("\\n", "");
             BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals(ChatMsgType.FriendTalkNotice)) {
-                FriendTalkRsp rsp = JSON.parseObject(baseResponse.message,FriendTalkRsp.class);
+                FriendTalkRsp rsp = JSON.parseObject(baseResponse.message, FriendTalkRsp.class);
                 receiveMsg(rsp);
             }
-
-            Log.e("response----===", message);
-            MyLog.e("onMessage(String, T):" + message);
         }
 
         @Override

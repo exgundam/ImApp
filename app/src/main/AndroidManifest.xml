@@ -35,6 +35,7 @@
             />
         <activity
             android:name=".ui.activity.ChatDetailActivity"
+            android:windowSoftInputMode="adjustPan"
             />
         <activity
             android:name=".ui.activity.MainActivity"

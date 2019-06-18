@@ -124,13 +124,10 @@ public class AddFriendActivity extends BaseTitleActivity {
         @Override
         public <T> void onMessage(String message, T data) {
 
-            //message = message.replace("\\", "");
-            MyLog.e("onMessage(String, T):" + message.replace("\\", ""));
             BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals("MsgReceivedAck")) {
                ToastUtil.showToast("已发送");
             }
-            // MyLog.e("onMessage(String, T):" + message);
         }
 
         @Override

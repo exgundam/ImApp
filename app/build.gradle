@@ -114,6 +114,7 @@ dependencies {
     implementation 'com.wx.ovalimageview:roundimageview:1.1.0'
     implementation 'com.github.promeg:tinypinyin:2.0.1'
     implementation 'com.gyf.immersionbar:immersionbar:3.0.0-beta05'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
 
     implementation project(':websocketlib')
 

@@ -2,9 +2,7 @@ package com.kk2.user.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -14,10 +12,15 @@ import com.ahuo.tool.util.ToastUtil;
 import com.alibaba.fastjson.JSON;
 import com.kk2.user.R;
 import com.kk2.user.base.BaseActivity;
+import com.kk2.user.base.BaseChatReq;
 import com.kk2.user.base.BaseChatRsp;
 import com.kk2.user.core.ChatMsgType;
+import com.kk2.user.entity.Request.Content;
 import com.kk2.user.entity.other.MessageChatEntity;
-import com.kk2.user.entity.response.FriendPushNoticeRsp;
+import com.kk2.user.entity.response.ChatRoomMembersBean;
+import com.kk2.user.entity.response.ChatRoomMembersRsp;
+import com.kk2.user.entity.response.ChatRoomPushRsp;
+import com.kk2.user.entity.response.ChatRoomsBean;
 import com.kk2.user.entity.response.FriendTalkRsp;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.fragment.ChatFragment;
@@ -38,25 +41,20 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 
-import static com.kk2.user.ui.fragment.ContactFragment.ARGUMENT;
-
 public class MainActivity extends BaseActivity {
 
     @BindView(R.id.tabContent)
     FrameLayout mTabContent;
     @BindView(R.id.tabHost)
     FragmentTabHost mTabHost;
-    private FriendPushNoticeRsp mFriendPushNoticeRsp;
-    private static final String INTENT_ENTITY = "intent_entity";
     private Class[] mClassFragments = {ChatFragment.class, ContactFragment.class, DiscoveryFragment.class, PersonFragment.class};
     private String[] mStrTab;
     private int[] mIRTab = {R.drawable.bg_tab_selector_main, R.drawable.bg_tab_selector_main, R.drawable.bg_tab_selector_discover, R.drawable.bg_tab_selector_person};
     private boolean mIsExit;
 
 
-    public static void startActivity(Activity activity, FriendPushNoticeRsp friendPushNoticeRsp) {
+    public static void startActivity(Activity activity) {
         Intent intent = new Intent(activity, MainActivity.class);
-        intent.putExtra(INTENT_ENTITY, friendPushNoticeRsp);
         activity.startActivity(intent);
     }
 
@@ -69,23 +67,26 @@ public class MainActivity extends BaseActivity {
     @Override
     public void initData() {
         WebSocketHandler.getDefault().addListener(socketListener);
-        mFriendPushNoticeRsp=getIntent().getParcelableExtra(INTENT_ENTITY);
+
         mStrTab = getResources().getStringArray(R.array.main_tab_tag);
         mTabHost.setup(this, getSupportFragmentManager(), R.id.tabContent);
         for (int i = 0; i < mClassFragments.length; i++) {
             TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mStrTab[i]).setIndicator(getTabView(i));
-            Bundle bundle = null;
-            if (i==1){
-                bundle = new Bundle();
-                bundle.putParcelable(ARGUMENT, mFriendPushNoticeRsp);
-            }
-            mTabHost.addTab(tabSpec, mClassFragments[i],bundle);
+            mTabHost.addTab(tabSpec, mClassFragments[i],null);
         }
         mTabHost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
+        getGroupMessage();
 
     }
 
 
+    private void getGroupMessage(){
+        BaseChatReq getChatGroup = new BaseChatReq();
+        getChatGroup.MsgType = ChatMsgType.TriggerChatroomPushTask;
+        getChatGroup.Content = new Content();
+        getChatGroup.Content.WeChatId = UserInfo.weChatId;
+        WebSocketHandler.getDefault().send(JSON.toJSONString(getChatGroup));
+    }
     private MyTabView getTabView(int position) {
         MyTabView tabView = new MyTabView(this);
         tabView.setImageResource(mIRTab[position]).setTextContent(mStrTab[position]);
@@ -174,16 +175,22 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public <T> void onMessage(String message, T data) {
-            //String  message2=message.replaceAll("\"","")+"---";
-            message = message.replace("\\n", "");
+            MyLog.e("onMessage(String, T):"+message.replace("\\n", "").replace("\\", ""));
             BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals(ChatMsgType.FriendTalkNotice)) {
                 FriendTalkRsp rsp = JSON.parseObject(baseResponse.message,FriendTalkRsp.class);
                 receiveMsg(rsp);
+            }else if (baseResponse.msgType.equals(ChatMsgType.ChatroomPushNotice)){
+                ChatRoomPushRsp chatRoomPushRsp=JSON.parseObject(baseResponse.message, ChatRoomPushRsp.class);
+                for (ChatRoomsBean chatRoomsBean:chatRoomPushRsp.getChatRooms()){
+                    UserInfo.chatRoomsBeanHashMap.put(chatRoomsBean.getUserName(),chatRoomsBean);
+                }
+            }else if (baseResponse.msgType.equals(ChatMsgType.ChatRoomMembersNotice)){
+                ChatRoomMembersRsp chatRoomMembersRsp=JSON.parseObject(baseResponse.message, ChatRoomMembersRsp.class);
+                for (ChatRoomMembersBean chatRoomMembersBean:chatRoomMembersRsp.getMembers()){
+                    UserInfo.ChatRoomMemBerBeanHashMap.put(chatRoomMembersBean.getWxid(),chatRoomMembersBean);
+                }
             }
-
-            Log.e("response----===", message);
-            MyLog.e("onMessage(String, T):" + message);
         }
 
         @Override

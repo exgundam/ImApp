@@ -2,7 +2,6 @@ package com.kk2.user.ui.fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,14 +14,12 @@ import com.kk2.user.base.BaseTitleFragment;
 import com.kk2.user.core.ChatMsgType;
 import com.kk2.user.entity.other.ChatEntity;
 import com.kk2.user.entity.response.FriendTalkRsp;
-import com.kk2.user.entity.response.FriendsBean;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.activity.AddFriendActivity;
 import com.kk2.user.ui.activity.ChatDetailActivity;
 import com.kk2.user.ui.adapter.ChatListAdapter;
 import com.kk2.user.ui.widget.MyAppBar;
-import com.kk2.user.util.ChatUtils;
-import com.kk2.user.util.MyUtils;
+import com.kk2.user.util.MessageUtil;
 import com.zhangke.websocket.SimpleListener;
 import com.zhangke.websocket.SocketListener;
 import com.zhangke.websocket.WebSocketHandler;
@@ -115,14 +112,7 @@ public class ChatFragment extends BaseTitleFragment implements ChatListAdapter.L
         int pos = getChatPos(rsp.getFriendId());
         if (pos >= 0) {
             ChatEntity entity = mMessageList.get(pos);
-            entity.text = MyUtils.Base64DecodeUtf8(rsp.getContent());
-            entity.friendId = rsp.getFriendId();
-            entity.name = rsp.getFriendId();
-            FriendsBean friendsBean= ChatUtils.getFriendEntity(entity.friendId);
-            if (friendsBean!=null){
-                entity.avatar =friendsBean.getAvatar();
-            }
-            entity.time = "22：00";
+            MessageUtil.setEntity(entity,rsp);
             if (!entity.friendId.equals(UserInfo.inChatId)) {
                 entity.unReadCount++;
             }
@@ -131,21 +121,12 @@ public class ChatFragment extends BaseTitleFragment implements ChatListAdapter.L
 
         } else {
             ChatEntity entity = new ChatEntity();
-            entity.name = rsp.getFriendId();
-            entity.friendId = rsp.getFriendId();
-            FriendsBean friendsBean= ChatUtils.getFriendEntity(entity.friendId);
-            if (friendsBean!=null){
-                entity.avatar =friendsBean.getAvatar();
-            }
-            entity.time = "22：00";
-            entity.text = MyUtils.Base64DecodeUtf8(rsp.getContent());
+            MessageUtil.setEntity(entity,rsp);
             entity.unReadCount = 1;
             mMessageList.add(0, entity);
         }
         mChatListAdapter.notifyDataSetChanged();
 
-
-        // MyUtils.hideSoftKeyboard(this, mMsgInput);
     }
 
     private SocketListener socketListener = new SimpleListener() {
@@ -176,16 +157,11 @@ public class ChatFragment extends BaseTitleFragment implements ChatListAdapter.L
 
         @Override
         public <T> void onMessage(String message, T data) {
-            //String  message2=message.replaceAll("\"","")+"---";
-            message = message.replace("\\n", "");
             BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals(ChatMsgType.FriendTalkNotice)) {
                 FriendTalkRsp rsp = JSON.parseObject(baseResponse.message, FriendTalkRsp.class);
                 receiveMsg(rsp);
             }
-
-            Log.e("response----===", message);
-            MyLog.e("onMessage(String, T):" + message);
         }
 
         @Override

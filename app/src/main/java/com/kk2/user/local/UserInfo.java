@@ -1,6 +1,10 @@
 package com.kk2.user.local;
 
-import com.kk2.user.entity.response.FriendPushNoticeRsp;
+import com.kk2.user.entity.response.ChatRoomMembersBean;
+import com.kk2.user.entity.response.ChatRoomsBean;
+import com.kk2.user.entity.response.FriendsBean;
+
+import java.util.HashMap;
 
 public class UserInfo {
     public static String AccessToken;
@@ -11,5 +15,7 @@ public class UserInfo {
 
     public static String inChatId;
 
-    public static FriendPushNoticeRsp friendPushNoticeRsp;
+    public static HashMap<String, FriendsBean> friendsBeanHashMap=new HashMap<>();
+    public static HashMap<String, ChatRoomsBean> chatRoomsBeanHashMap = new HashMap<>();
+    public static HashMap<String, ChatRoomMembersBean> ChatRoomMemBerBeanHashMap = new HashMap<>();
 }

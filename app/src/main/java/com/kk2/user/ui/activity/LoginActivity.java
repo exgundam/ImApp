@@ -17,7 +17,8 @@ import com.kk2.user.entity.Request.Content;
 import com.kk2.user.entity.Request.DeviceAuthRsp;
 import com.kk2.user.entity.Request.WeChatInfo;
 import com.kk2.user.entity.other.ChatErrorRsp;
-import com.kk2.user.entity.response.ChatRoomMembersRsp;
+import com.kk2.user.entity.response.FriendPushNoticeRsp;
+import com.kk2.user.entity.response.FriendsBean;
 import com.kk2.user.entity.response.GetWeChatRsp;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.widget.MyAppBar;
@@ -82,7 +83,7 @@ public class LoginActivity extends BaseTitleActivity {
         request.Content.AuthType = "2";
         String Credential = MyUtils.Base64EncodeToString(account + ":" + password);
         request.Content.Credential = Credential.trim();
-         MyLog.e(JSON.toJSONString(request)+"--");
+        MyLog.e(JSON.toJSONString(request) + "--");
         WebSocketHandler.getDefault().send(JSON.toJSONString(request));
     }
 
@@ -124,16 +125,14 @@ public class LoginActivity extends BaseTitleActivity {
 
         @Override
         public <T> void onMessage(String message, T data) {
-            //message = message.replace("\\", "");
-           // String message2=message.replace("\\", "");
-            MyLog.e("onMessage(String, T):"+message);
-            BaseChatRsp baseResponse= JSON.parseObject(message, BaseChatRsp.class);
+            // MyLog.e("onMessage(String, T):"+message.replace("\\n", "").replace("\\", ""));
+            BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals(ChatMsgType.DeviceAuthRsp)) {
                 DeviceAuthRsp deviceAuthRsp = JSON.parseObject(baseResponse.message, DeviceAuthRsp.class);
                 UserInfo.AccessToken = deviceAuthRsp.AccessToken;
                 UserInfo.AccountType = deviceAuthRsp.Extra.AccountType;
                 UserInfo.UnionId = deviceAuthRsp.Extra.Unionid;
-                SupplierId=deviceAuthRsp.Extra.SupplierId;
+                SupplierId = deviceAuthRsp.Extra.SupplierId;
                 BaseChatReq getWeChat = new BaseChatReq();
                 getWeChat.MsgType = ChatMsgType.GetWeChatsReq;
                 getWeChat.Content = new Content();
@@ -145,25 +144,25 @@ public class LoginActivity extends BaseTitleActivity {
             } else if (baseResponse.msgType.equals(ChatMsgType.GetWeChatsRsp)) {
                 GetWeChatRsp getWeChatRsp = JSON.parseObject(baseResponse.message, GetWeChatRsp.class);
                 String weChatId = getWeChatRsp.getWeChats().get(0).getWeChatId();
-                UserInfo.weChatId=weChatId;
+                UserInfo.weChatId = weChatId;
 
-                BaseChatReq loginNotice=new BaseChatReq();
-                loginNotice.MsgType=ChatMsgType.WeChatLoginNotice;
-                loginNotice.Content=new Content();
-                loginNotice.Content.SupplierId=SupplierId;
-                loginNotice.Content.UnionId=UserInfo.UnionId;
-                loginNotice.Content.AccountType=UserInfo.AccountType;
-                WeChatInfo weChatInfo=new WeChatInfo();
-                weChatInfo.WeChatId=weChatId;
-                weChatInfo.IsLogin=true;
-                loginNotice.Content.WeChats=new WeChatInfo[]{weChatInfo};
-                isLogin=true;
+                BaseChatReq loginNotice = new BaseChatReq();
+                loginNotice.MsgType = ChatMsgType.WeChatLoginNotice;
+                loginNotice.Content = new Content();
+                loginNotice.Content.SupplierId = SupplierId;
+                loginNotice.Content.UnionId = UserInfo.UnionId;
+                loginNotice.Content.AccountType = UserInfo.AccountType;
+                WeChatInfo weChatInfo = new WeChatInfo();
+                weChatInfo.WeChatId = weChatId;
+                weChatInfo.IsLogin = true;
+                loginNotice.Content.WeChats = new WeChatInfo[]{weChatInfo};
+                isLogin = true;
                 WebSocketHandler.getDefault().send(JSON.toJSONString(loginNotice));
 
 
-            } else if (baseResponse.msgType.equals(ChatMsgType.MsgReceivedAck)){
-                if (isLogin){
-                    isLogin=false;
+            } else if (baseResponse.msgType.equals(ChatMsgType.MsgReceivedAck)) {
+                if (isLogin) {
+                    isLogin = false;
                     BaseChatReq getFriend = new BaseChatReq();
                     getFriend.MsgType = ChatMsgType.TriggerFriendPushTask;
                     getFriend.Content = new Content();
@@ -171,31 +170,19 @@ public class LoginActivity extends BaseTitleActivity {
                     //friendRequest.accesstoken=accessToken;
                     // Log.e("request===", JSON.toJSONString(getFriend));
                     WebSocketHandler.getDefault().send(JSON.toJSONString(getFriend));
-
                 }
 
-            }else if (baseResponse.msgType.equals(ChatMsgType.FriendPushNotice)) {
-                BaseChatReq getChatGroup = new BaseChatReq();
-                getChatGroup.MsgType = ChatMsgType.TriggerChatroomPushTask;
-                getChatGroup.Content = new Content();
-                getChatGroup.Content.WeChatId = UserInfo.weChatId;
-                WebSocketHandler.getDefault().send(JSON.toJSONString(getChatGroup));
-               /* FriendPushNoticeRsp friendPushNoticeRsp = JSON.parseObject(baseResponse.message, FriendPushNoticeRsp.class);
-                UserInfo.friendPushNoticeRsp=friendPushNoticeRsp;
-                MainActivity.startActivity(LoginActivity.this,friendPushNoticeRsp);
-                finish();*/
-            }else if (baseResponse.msgType.equals(ChatMsgType.ChatroomPushNotice)){
-
-
-            }else if (baseResponse.msgType.equals(ChatMsgType.ChatRoomMembersNotice)){
-                MyLog.e("陈工此时");
-                ChatRoomMembersRsp rsp=JSON.parseObject(baseResponse.message, ChatRoomMembersRsp.class);
-                MyLog.e("陈工此时"+rsp.getWeChatId()+"---"+rsp.getMembers().size());
-
-            }else if (baseResponse.msgType.equals(ChatMsgType.Error)) {
+            } else if (baseResponse.msgType.equals(ChatMsgType.FriendPushNotice)) {
+                FriendPushNoticeRsp friendPushNoticeRsp = JSON.parseObject(baseResponse.message, FriendPushNoticeRsp.class);
+                for (FriendsBean friendsBean:friendPushNoticeRsp.getFriends()) {
+                    UserInfo.friendsBeanHashMap.put(friendsBean.getFriendId(),friendsBean);
+                }
+                MainActivity.startActivity(LoginActivity.this);
+                finish();
+            } else if (baseResponse.msgType.equals(ChatMsgType.Error)) {
                 ChatErrorRsp chatErrorRsp = JSON.parseObject(baseResponse.message, ChatErrorRsp.class);
                 ToastUtil.showToast(chatErrorRsp.ErrorMsg);
-            }else{
+            } else {
 
             }
 

@@ -1,6 +1,5 @@
 package com.kk2.user.ui.fragment;
 
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,11 +14,11 @@ import com.kk2.user.contacts.cn.CNPinyinFactory;
 import com.kk2.user.contacts.search.CharIndexView;
 import com.kk2.user.contacts.stickyheader.StickyHeaderDecoration;
 import com.kk2.user.entity.other.ChatEntity;
-import com.kk2.user.entity.response.FriendPushNoticeRsp;
 import com.kk2.user.entity.response.FriendsBean;
 import com.kk2.user.ui.activity.ChatDetailActivity;
 import com.kk2.user.ui.activity.GroupChatActivity;
 import com.kk2.user.ui.widget.MyAppBar;
+import com.kk2.user.util.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,8 +45,6 @@ public class ContactFragment extends BaseTitleFragment {
     CharIndexView mCharIndexView;
     @BindView(R.id.tvIndex)
     TextView mTvIndex;
-
-    public static final String ARGUMENT = "agrument";
 
     private ContactAdapter adapter;
     private ArrayList<CNPinyin<FriendsBean>> contactList = new ArrayList<>();
@@ -79,21 +76,15 @@ public class ContactFragment extends BaseTitleFragment {
 
     @Override
     public void initData() {
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            FriendPushNoticeRsp rsp = bundle.getParcelable(ARGUMENT);
-            if (rsp!=null){
-                friendsBeanList = rsp.getFriends();
-            }
-        }
-/*
-        findViewById(R.id.bt_search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SearchActivity.lanuch(MainActivity.this, contactList);
-            }
-        });
-*/
+    /*
+            findViewById(R.id.bt_search).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SearchActivity.lanuch(MainActivity.this, contactList);
+                }
+            });
+    */
+        friendsBeanList = ChatUtils.getFriendList();
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
         adapter = new ContactAdapter(contactList);
@@ -101,14 +92,16 @@ public class ContactFragment extends BaseTitleFragment {
             @Override
             public void onItemClick(FriendsBean contact) {
                 ToastUtil.showToast(contact.getFriendNick());
-                ChatEntity entity=new ChatEntity();
-                entity.name=contact.getFriendNick();
-                entity.friendId=contact.getFriendId();
-                ChatDetailActivity.startActivity(getActivity(),entity);
+                ChatEntity entity = new ChatEntity();
+                entity.name = contact.getFriendNick();
+                entity.friendId = contact.getFriendId();
+                ChatDetailActivity.startActivity(getActivity(), entity);
             }
         });
         mRecyclerView.setAdapter(adapter);
-        mRecyclerView.addItemDecoration(new StickyHeaderDecoration(adapter));
+        mRecyclerView.addItemDecoration(new
+
+                StickyHeaderDecoration(adapter));
         mCharIndexView.setOnCharIndexChangedListener(new CharIndexView.OnCharIndexChangedListener() {
             @Override
             public void onCharIndexChanged(char currentIndex) {
@@ -130,6 +123,7 @@ public class ContactFragment extends BaseTitleFragment {
                 }
             }
         });
+
         getPinyinList();
 
     }
