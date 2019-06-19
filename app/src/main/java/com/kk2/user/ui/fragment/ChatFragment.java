@@ -112,7 +112,7 @@ public class ChatFragment extends BaseTitleFragment implements ChatListAdapter.L
         int pos = getChatPos(rsp.getFriendId());
         if (pos >= 0) {
             ChatEntity entity = mMessageList.get(pos);
-            MessageUtil.setEntity(entity,rsp);
+            MessageUtil.setEntity(entity,rsp,false);
             if (!entity.friendId.equals(UserInfo.inChatId)) {
                 entity.unReadCount++;
             }
@@ -121,7 +121,7 @@ public class ChatFragment extends BaseTitleFragment implements ChatListAdapter.L
 
         } else {
             ChatEntity entity = new ChatEntity();
-            MessageUtil.setEntity(entity,rsp);
+            MessageUtil.setEntity(entity,rsp,false);
             entity.unReadCount = 1;
             mMessageList.add(0, entity);
         }

@@ -11,6 +11,8 @@ public class ChatEntity implements Parcelable {
     public String friendId;
     public int unReadCount;
     public String chatId;
+    public int type;
+
 
     public ChatEntity(){
 
@@ -25,6 +27,7 @@ public class ChatEntity implements Parcelable {
         friendId = in.readString();
         unReadCount = in.readInt();
         chatId = in.readString();
+        type = in.readInt();
     }
 
     @Override
@@ -36,6 +39,7 @@ public class ChatEntity implements Parcelable {
         dest.writeString(friendId);
         dest.writeInt(unReadCount);
         dest.writeString(chatId);
+        dest.writeInt(type);
     }
 
     @Override

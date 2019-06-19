@@ -11,12 +11,13 @@
 
     <RelativeLayout
         android:id="@+id/head_bg"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_margin="16dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="center_vertical"
         android:gravity="center">
 
-        <com.wx.ovalimageview.RoundImageView
+        <ImageView
             android:id="@+id/head_img"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -29,9 +30,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginRight="20dp"
         android:gravity="left"
+        android:layout_gravity="center_vertical"
         android:orientation="vertical">
 
         <TextView
@@ -39,6 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="demo_9999"
+            android:visibility="gone"
             android:textColor="#cccccc"
             android:textSize="12sp"
             android:textStyle="bold" />

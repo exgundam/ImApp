@@ -8,6 +8,15 @@ public class MessageChatEntity {
     private int type;// 消息类型，1 对方消息，2 我的消息
     private String date;// 日期
     private int state; //消息发送状态   0发送中  1发送成功   -1 发送失败
+    private String avatar;//头像
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 
     public MessageChatEntity() {
     }

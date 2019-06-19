@@ -3,6 +3,7 @@ package com.kk2.user.local;
 import com.kk2.user.entity.response.ChatRoomMembersBean;
 import com.kk2.user.entity.response.ChatRoomsBean;
 import com.kk2.user.entity.response.FriendsBean;
+import com.kk2.user.entity.response.WeChatsBean;
 
 import java.util.HashMap;
 
@@ -12,6 +13,7 @@ public class UserInfo {
     public static String UnionId;
 
     public static String weChatId;
+    public static WeChatsBean weChatsBean;
 
     public static String inChatId;
 

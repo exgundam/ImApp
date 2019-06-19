@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ahuo.tool.imageloader.GlideLoaderUtil;
+import com.kk2.user.MyApp;
 import com.kk2.user.R;
+import com.kk2.user.entity.other.ChatEntity;
 import com.kk2.user.entity.other.MessageChatEntity;
 
 import java.util.List;
@@ -18,10 +21,10 @@ import butterknife.ButterKnife;
 
 public class MessageDetailAdapter extends RecyclerView.Adapter<MessageDetailAdapter.ViewHolder> {
     private Context context;
-    private List<MessageChatEntity> items;
+    private List<ChatEntity> items;
     private ClickListener clickListener;
 
-    public MessageDetailAdapter(Context context, List<MessageChatEntity> items) {
+    public MessageDetailAdapter(Context context, List<ChatEntity> items) {
         this.context = context;
         this.items = items;
     }
@@ -54,22 +57,14 @@ public class MessageDetailAdapter extends RecyclerView.Adapter<MessageDetailAdap
 
     @Override
     public int getItemViewType(int position) {
-        return items.get(position).getType();
+        return items.get(position).type;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        MessageChatEntity messageBean = items.get(position);
-        ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.mItemMsg.setText(messageBean.getMsg());
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = holder.getLayoutPosition();
-                clickListener.onItemClick(holder.itemView, pos, items);
-            }
-        });
+        ChatEntity messageBean = items.get(position);
+        holder.mItemMsg.setText(messageBean.text);
+        GlideLoaderUtil.loadCircleImage(MyApp.getInstance().getApplicationContext(),messageBean.avatar,-1,holder.mHeadImg,true);
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.kk2.user.ui.widget.MyAppBar;
 import com.kk2.user.ui.widget.RecordButton;
 import com.kk2.user.ui.widget.StateButton;
 import com.kk2.user.util.ChatUiHelper;
+import com.kk2.user.util.MessageUtil;
 import com.kk2.user.util.MyUtils;
 import com.zhangke.websocket.SimpleListener;
 import com.zhangke.websocket.SocketListener;
@@ -72,9 +73,8 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
 
 
     public static final String INTENT_ENTITY = "intent_entity";
-    public static final int page_count = 10;
     private MessageDetailAdapter mAdapter;
-    private List<MessageChatEntity> mList;
+    private List<ChatEntity> mList;
     private ChatEntity mChatEntity;
 
     public static void startActivity(Activity activity, ChatEntity entity) {
@@ -93,14 +93,8 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
         mList = new ArrayList<>();
         mAdapter = new MessageDetailAdapter(this, mList);
         mRecyclerView.setAdapter(mAdapter);
-      /*  mAdapter.setOnItemClickListener(new MessageDetailAdapter.ClickListener() {
-            @Override
-            public void onItemClick(View v, int position, List<MessageChatEntity> items) {
-
-            }
-        });*/
         //  mRecyclerView.scrollToPosition(mList.size() - 1);
-//1)添加布局管理器
+        //1)添加布局管理器
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -177,8 +171,8 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
                     MyLog.e("direction -1: false底部");
                 }
             }
-        });*/
-
+        });
+*/
     }
 
     private List<MessageChatEntity> genData() {
@@ -207,20 +201,19 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
             case R.id.bt_message_send: //发送
                 String inputContent = mEtMsgInput.getText().toString();
                 if (!TextUtils.isEmpty(inputContent)) {
-                    MessageChatEntity messageBean = new MessageChatEntity();
-                    messageBean.setDate(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
-                    messageBean.setMsg(inputContent);
-                    messageBean.setType(2);
-                    messageBean.setState(1);
+                    ChatEntity messageBean = new ChatEntity();
+                    messageBean.time=(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
+                    messageBean.text=inputContent;
+                    messageBean.type=2;
+                    messageBean.avatar=UserInfo.weChatsBean.getAvatar();
 
                     mList.add(messageBean);
                     mAdapter.notifyDataSetChanged();
-
-                    mEtMsgInput.clearFocus();
-                    mEtMsgInput.setSelected(false);
+                    // mEtMsgInput.clearFocus();
+                    // mEtMsgInput.setSelected(false);
                     mEtMsgInput.setText("");
                     mRecyclerView.scrollToPosition(mList.size() - 1);
-                    MyUtils.hideSoftKeyboard(this, mEtMsgInput);
+                    // MyUtils.hideSoftKeyboard(this, mEtMsgInput);
                     //TalkToFriendTask
                     sendMsg(inputContent);
                 }
@@ -241,17 +234,17 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
     }
 
     private void receiveMsg(FriendTalkRsp rsp) {
-        MessageChatEntity messageBean = new MessageChatEntity();
-        messageBean.setDate(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
-        messageBean.setMsg(MyUtils.Base64DecodeUtf8(rsp.getContent()));
-        messageBean.setType(1);
-        messageBean.setState(0);
+        if (!mChatEntity.friendId.equals(rsp.getFriendId())) {
+            return;
+        }
+            ChatEntity messageBean=new ChatEntity();
+            MessageUtil.setEntity(messageBean,rsp,true);
+            messageBean.type=1;
+            mList.add(messageBean);
+            mAdapter.notifyDataSetChanged();
+            mRecyclerView.scrollToPosition(mList.size() - 1);
+            // MyUtils.hideSoftKeyboard(this, mMsgInput);
 
-        mList.add(messageBean);
-        mAdapter.notifyDataSetChanged();
-
-        mRecyclerView.scrollToPosition(mList.size() - 1);
-        // MyUtils.hideSoftKeyboard(this, mMsgInput);
     }
 
     @Override

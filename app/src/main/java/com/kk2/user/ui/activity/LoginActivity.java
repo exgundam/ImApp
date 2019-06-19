@@ -125,7 +125,7 @@ public class LoginActivity extends BaseTitleActivity {
 
         @Override
         public <T> void onMessage(String message, T data) {
-            // MyLog.e("onMessage(String, T):"+message.replace("\\n", "").replace("\\", ""));
+             MyLog.e("onMessage(String, T):"+message.replace("\\n", "").replace("\\", ""));
             BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals(ChatMsgType.DeviceAuthRsp)) {
                 DeviceAuthRsp deviceAuthRsp = JSON.parseObject(baseResponse.message, DeviceAuthRsp.class);
@@ -145,7 +145,7 @@ public class LoginActivity extends BaseTitleActivity {
                 GetWeChatRsp getWeChatRsp = JSON.parseObject(baseResponse.message, GetWeChatRsp.class);
                 String weChatId = getWeChatRsp.getWeChats().get(0).getWeChatId();
                 UserInfo.weChatId = weChatId;
-
+                UserInfo.weChatsBean=getWeChatRsp.getWeChats().get(0);
                 BaseChatReq loginNotice = new BaseChatReq();
                 loginNotice.MsgType = ChatMsgType.WeChatLoginNotice;
                 loginNotice.Content = new Content();
