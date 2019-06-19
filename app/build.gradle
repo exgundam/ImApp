@@ -42,8 +42,8 @@ android {
             buildConfigField("boolean", "MY_LOG", "true")
             buildConfigField("String", "API_HOST", "\"http://www.liuhuijie.cn/person/\"")
             versionNameSuffix "-debug"
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             debuggable true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
