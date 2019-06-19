@@ -61,7 +61,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {//4.4到5.0
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }*/
-        ImmersionBar.with(this).fitsSystemWindows(true).statusBarColor(R.color.public_status_bar_bg_color).init();
+        ImmersionBar.with(this).fitsSystemWindows(true).statusBarColor(R.color.public_status_bar_bg_color).keyboardEnable(true).init();
 
 
         getDelegate().setContentView(R.layout.activity_base);
