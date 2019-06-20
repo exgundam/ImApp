@@ -50,5 +50,14 @@ public class ChatUtils {
         }
         return friendsBeans;
     }
+    public static List<ChatRoomsBean> getChatRoomList() {
+
+        List<ChatRoomsBean> chatRoomsBeans = new ArrayList<>();
+        for (Map.Entry<String, ChatRoomsBean> entry : UserInfo.chatRoomsBeanHashMap.entrySet()) {
+            chatRoomsBeans.add(entry.getValue());
+        }
+        return chatRoomsBeans;
+    }
+
 }
 

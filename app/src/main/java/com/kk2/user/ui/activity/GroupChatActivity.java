@@ -7,20 +7,23 @@ import android.support.v7.widget.RecyclerView;
 
 import com.ahuo.tool.util.ToastUtil;
 import com.kk2.user.R;
-import com.kk2.user.base.BaseActivity;
+import com.kk2.user.base.BaseTitleActivity;
+import com.kk2.user.entity.other.ChatEntity;
+import com.kk2.user.entity.response.ChatRoomsBean;
 import com.kk2.user.ui.adapter.GroupChatAdapter;
+import com.kk2.user.ui.widget.MyAppBar;
+import com.kk2.user.util.ChatUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 
-public class GroupChatActivity extends BaseActivity {
+public class GroupChatActivity extends BaseTitleActivity {
 
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
     private GroupChatAdapter mGroupChatAdapter;
-    private List<String> mGroupChatList;
+    private List<ChatRoomsBean> mGroupChatList;
 
     public static void startActivity(Activity activity) {
         Intent intent = new Intent(activity, GroupChatActivity.class);
@@ -36,16 +39,18 @@ public class GroupChatActivity extends BaseActivity {
     @Override
     public void initData() {
         mGroupChatAdapter=new GroupChatAdapter();
-        mGroupChatList=new ArrayList<>();
-        mGroupChatList.add("群聊1");
-        mGroupChatList.add("群聊2");
+        mGroupChatList= ChatUtils.getChatRoomList();
         mGroupChatAdapter.setData(mGroupChatList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mGroupChatAdapter);
         mGroupChatAdapter.setListener(new GroupChatAdapter.Listener() {
             @Override
-            public void onItemClick(String entity) {
-                ToastUtil.showToast(entity);
+            public void onItemClick(ChatRoomsBean entity) {
+                ToastUtil.showToast(entity.getNickName());
+                ChatEntity chatEntity=new ChatEntity();
+                chatEntity.name=entity.getNickName();
+                chatEntity.friendId=entity.getUserName();
+                ChatDetailActivity.startActivity(GroupChatActivity.this,chatEntity);
             }
         });
 
@@ -59,5 +64,10 @@ public class GroupChatActivity extends BaseActivity {
     @Override
     public void setPresenter() {
 
+    }
+
+    @Override
+    public MyAppBar.TitleConfig getTitleViewConfig() {
+        return buildDefaultConfig(getString(R.string.activity_title_chat_group));
     }
 }

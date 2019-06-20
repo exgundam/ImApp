@@ -45,7 +45,9 @@
         <activity
             android:name=".ui.activity.GroupChatActivity"
             />
-
+        <activity
+            android:name=".ui.activity.LookFriendActivity"
+            />
 
     </application>
 

@@ -59,6 +59,8 @@
     <string name="fragment_title_person">个人中心</string>
 
     <string name="activity_title_add_friend">添加好友</string>
+    <string name="activity_title_chat_group">群聊</string>
+
 
 
 </resources>

@@ -1,11 +1,8 @@
 package com.kk2.user.entity.response;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.util.List;
 
-public class FriendPushNoticeRsp implements Parcelable {
+public class FriendPushNoticeRsp {
 
     /**
      * WeChatId : wxid_n4obp6tu9z9q12
@@ -22,38 +19,6 @@ public class FriendPushNoticeRsp implements Parcelable {
     public FriendPushNoticeRsp(){
 
     }
-
-    protected FriendPushNoticeRsp(Parcel in) {
-        WeChatId = in.readString();
-        Size = in.readInt();
-        Count = in.readInt();
-        Friends = in.createTypedArrayList(FriendsBean.CREATOR);
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(WeChatId);
-        dest.writeInt(Size);
-        dest.writeInt(Count);
-        dest.writeTypedList(Friends);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<FriendPushNoticeRsp> CREATOR = new Creator<FriendPushNoticeRsp>() {
-        @Override
-        public FriendPushNoticeRsp createFromParcel(Parcel in) {
-            return new FriendPushNoticeRsp(in);
-        }
-
-        @Override
-        public FriendPushNoticeRsp[] newArray(int size) {
-            return new FriendPushNoticeRsp[size];
-        }
-    };
 
     public String getWeChatId() {
         return WeChatId;

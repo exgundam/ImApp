@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.ahuo.tool.util.ToastUtil;
 import com.kk2.user.R;
 import com.kk2.user.base.BaseTitleFragment;
 import com.kk2.user.contacts.adapter.ContactAdapter;
@@ -13,10 +12,9 @@ import com.kk2.user.contacts.cn.CNPinyin;
 import com.kk2.user.contacts.cn.CNPinyinFactory;
 import com.kk2.user.contacts.search.CharIndexView;
 import com.kk2.user.contacts.stickyheader.StickyHeaderDecoration;
-import com.kk2.user.entity.other.ChatEntity;
 import com.kk2.user.entity.response.FriendsBean;
-import com.kk2.user.ui.activity.ChatDetailActivity;
 import com.kk2.user.ui.activity.GroupChatActivity;
+import com.kk2.user.ui.activity.LookFriendActivity;
 import com.kk2.user.ui.widget.MyAppBar;
 import com.kk2.user.util.ChatUtils;
 
@@ -91,11 +89,7 @@ public class ContactFragment extends BaseTitleFragment {
         adapter.setListener(new ContactAdapter.Listener() {
             @Override
             public void onItemClick(FriendsBean contact) {
-                ToastUtil.showToast(contact.getFriendNick());
-                ChatEntity entity = new ChatEntity();
-                entity.name = contact.getFriendNick();
-                entity.friendId = contact.getFriendId();
-                ChatDetailActivity.startActivity(getActivity(), entity);
+                LookFriendActivity.startActivity(getActivity(), contact);
             }
         });
         mRecyclerView.setAdapter(adapter);

@@ -5,9 +5,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ahuo.tool.imageloader.GlideLoaderUtil;
+import com.kk2.user.MyApp;
 import com.kk2.user.R;
+import com.kk2.user.entity.response.ChatRoomsBean;
+import com.kk2.user.ui.activity.ChatDetailActivity;
 
 import java.util.List;
 
@@ -17,10 +22,10 @@ import butterknife.ButterKnife;
 public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.ViewHolder> {
 
 
-    private List<String> mDataList;
+    private List<ChatRoomsBean> mDataList;
     private Listener mListener;
 
-    public void setData(List<String> dataList) {
+    public void setData(List<ChatRoomsBean> dataList) {
         this.mDataList = dataList;
     }
 
@@ -37,9 +42,10 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        final String entity = mDataList.get(i);
-        viewHolder.tvTitle.setText(entity);
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+        final ChatRoomsBean entity = mDataList.get(i);
+        viewHolder.tvTitle.setText(entity.getNickName());
+        GlideLoaderUtil.loadCircleImage(MyApp.getInstance().getApplicationContext(), entity.getAvatar(), -1, viewHolder.ivAvatar, true);
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
@@ -61,6 +67,8 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
 
         @BindView(R.id.tvTitle)
         TextView tvTitle;
+        @BindView(R.id.ivAvatar)
+        ImageView ivAvatar;
         View itemView;
 
         public ViewHolder(View itemView) {
@@ -72,6 +80,6 @@ public class GroupChatAdapter extends RecyclerView.Adapter<GroupChatAdapter.View
     }
 
     public interface Listener {
-        void onItemClick(String entity);
+        void onItemClick(ChatRoomsBean entity);
     }
 }

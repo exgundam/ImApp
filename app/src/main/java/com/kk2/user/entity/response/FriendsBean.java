@@ -1,11 +1,12 @@
 package com.kk2.user.entity.response;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.kk2.user.contacts.cn.CN;
 
-public class FriendsBean implements Parcelable , CN {
+import java.io.Serializable;
+
+public class FriendsBean implements Serializable, CN {
     /**
      * FriendId : h12035534611
      * FriendNick : 华~~
@@ -40,35 +41,6 @@ public class FriendsBean implements Parcelable , CN {
         Type = in.readInt();
         FriendNo = in.readString();
     }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(FriendId);
-        dest.writeString(FriendNick);
-        dest.writeString(Gender);
-        dest.writeString(Province);
-        dest.writeString(City);
-        dest.writeString(Avatar);
-        dest.writeInt(Type);
-        dest.writeString(FriendNo);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<FriendsBean> CREATOR = new Creator<FriendsBean>() {
-        @Override
-        public FriendsBean createFromParcel(Parcel in) {
-            return new FriendsBean(in);
-        }
-
-        @Override
-        public FriendsBean[] newArray(int size) {
-            return new FriendsBean[size];
-        }
-    };
 
     public String getFriendId() {
         return FriendId;
