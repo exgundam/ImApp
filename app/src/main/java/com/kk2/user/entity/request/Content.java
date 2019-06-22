@@ -1,4 +1,4 @@
-package com.kk2.user.entity.Request;
+package com.kk2.user.entity.request;
 
 public class Content {
     //auth

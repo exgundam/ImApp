@@ -15,7 +15,7 @@ import com.kk2.user.base.BaseActivity;
 import com.kk2.user.base.BaseChatReq;
 import com.kk2.user.base.BaseChatRsp;
 import com.kk2.user.core.ChatMsgType;
-import com.kk2.user.entity.Request.Content;
+import com.kk2.user.entity.request.Content;
 import com.kk2.user.entity.other.MessageChatEntity;
 import com.kk2.user.entity.response.ChatRoomMembersBean;
 import com.kk2.user.entity.response.ChatRoomMembersRsp;
@@ -25,7 +25,7 @@ import com.kk2.user.entity.response.FriendTalkRsp;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.fragment.ChatFragment;
 import com.kk2.user.ui.fragment.ContactFragment;
-import com.kk2.user.ui.fragment.DiscoveryFragment;
+import com.kk2.user.ui.fragment.FriendCircleFragment;
 import com.kk2.user.ui.fragment.PersonFragment;
 import com.kk2.user.ui.widget.MyTabView;
 import com.kk2.user.util.MyUtils;
@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity {
     FrameLayout mTabContent;
     @BindView(R.id.tabHost)
     FragmentTabHost mTabHost;
-    private Class[] mClassFragments = {ChatFragment.class, ContactFragment.class, DiscoveryFragment.class, PersonFragment.class};
+    private Class[] mClassFragments = {ChatFragment.class, ContactFragment.class, FriendCircleFragment.class, PersonFragment.class};
     private String[] mStrTab;
     private int[] mIRTab = {R.drawable.bg_tab_selector_main, R.drawable.bg_tab_selector_main, R.drawable.bg_tab_selector_discover, R.drawable.bg_tab_selector_person};
     private boolean mIsExit;

@@ -15,7 +15,7 @@ import com.kk2.user.R;
 import com.kk2.user.base.BaseChatReq;
 import com.kk2.user.base.BaseChatRsp;
 import com.kk2.user.base.BaseTitleActivity;
-import com.kk2.user.entity.Request.Content;
+import com.kk2.user.entity.request.Content;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.widget.MyAppBar;
 import com.kk2.user.util.MyUtils;

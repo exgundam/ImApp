@@ -19,7 +19,7 @@ import com.kk2.user.base.BaseChatReq;
 import com.kk2.user.base.BaseChatRsp;
 import com.kk2.user.base.BaseTitleActivity;
 import com.kk2.user.core.ChatMsgType;
-import com.kk2.user.entity.Request.Content;
+import com.kk2.user.entity.request.Content;
 import com.kk2.user.entity.other.ChatEntity;
 import com.kk2.user.entity.other.MessageChatEntity;
 import com.kk2.user.entity.response.FriendTalkRsp;

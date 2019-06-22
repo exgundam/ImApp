@@ -117,8 +117,12 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowContentOverlay">@null</item>
-
     </style>
 
+
+    <style name="PraiseOrCommentAnimationStyle">
+        <item name="android:windowEnterAnimation">@anim/anim_praise_or_comment_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_praise_or_comment_out</item>
+    </style>
 
 </resources>
