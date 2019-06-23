@@ -14,11 +14,17 @@ public interface ChatMsgType {
     String TriggerFriendPushTask="TriggerFriendPushTask";//获取好友列表
     String FriendPushNotice="FriendPushNotice";
 
+    String AddFriendsTask="AddFriendsTask";//添加好友
+
+    String TalkToFriendTask="TalkToFriendTask";//发送消息
+
     String TriggerChatroomPushTask="TriggerChatroomPushTask";//群聊信息
     String ChatroomPushNotice="ChatroomPushNotice";
     String ChatRoomMembersNotice="ChatRoomMembersNotice";
 
     String FriendTalkNotice="FriendTalkNotice";//单聊群聊
+
+    String TriggerCirclePushTask="TriggerCirclePushTask";//获取自己的朋友圈
 
     String Error="Error";//错误
 

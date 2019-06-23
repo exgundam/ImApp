@@ -15,13 +15,12 @@ import android.widget.RelativeLayout;
 import com.ahuo.tool.util.MyLog;
 import com.alibaba.fastjson.JSON;
 import com.kk2.user.R;
-import com.kk2.user.base.BaseChatReq;
 import com.kk2.user.base.BaseChatRsp;
 import com.kk2.user.base.BaseTitleActivity;
 import com.kk2.user.core.ChatMsgType;
-import com.kk2.user.entity.request.Content;
 import com.kk2.user.entity.other.ChatEntity;
 import com.kk2.user.entity.other.MessageChatEntity;
+import com.kk2.user.entity.request.ReqEntity;
 import com.kk2.user.entity.response.FriendTalkRsp;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.adapter.MessageDetailAdapter;
@@ -222,15 +221,14 @@ public class ChatDetailActivity extends BaseTitleActivity implements View.OnClic
     }
 
     private void sendMsg(String msg) {
-        BaseChatReq sendMsg = new BaseChatReq();
-        sendMsg.MsgType = "TalkToFriendTask";
-        sendMsg.Content = new Content();
-        sendMsg.Content.WeChatId = UserInfo.weChatId;
-        sendMsg.Content.ContentType = 1;
-        sendMsg.Content.FriendId = mChatEntity.friendId;
-        sendMsg.Content.Content = MyUtils.Base64EncodeUtf8(msg);
-        WebSocketHandler.getDefault().send(JSON.toJSONString(sendMsg));
-        MyLog.e("send" + JSON.toJSONString(sendMsg));
+        String sendMsg = ReqEntity.getBuilder()
+                .setMsgType(ChatMsgType.TalkToFriendTask)
+                .setWeChatId(UserInfo.weChatId)
+                .setContentType(1)
+                .setFriendId(mChatEntity.friendId)
+                .setContent(MyUtils.Base64EncodeUtf8(msg))
+                .buildJsonToString();
+        WebSocketHandler.getDefault().send(sendMsg);
     }
 
     private void receiveMsg(FriendTalkRsp rsp) {

@@ -15,7 +15,9 @@ import com.kk2.user.R;
 import com.kk2.user.base.BaseChatReq;
 import com.kk2.user.base.BaseChatRsp;
 import com.kk2.user.base.BaseTitleActivity;
+import com.kk2.user.core.ChatMsgType;
 import com.kk2.user.entity.request.Content;
+import com.kk2.user.entity.request.ReqEntity;
 import com.kk2.user.local.UserInfo;
 import com.kk2.user.ui.widget.MyAppBar;
 import com.kk2.user.util.MyUtils;
@@ -72,16 +74,16 @@ public class AddFriendActivity extends BaseTitleActivity {
             ToastUtil.showToast("请输入");
             return;
         }
-        BaseChatReq addFriend = new BaseChatReq();
-        addFriend.MsgType = "AddFriendsTask";
-        addFriend.Content = new Content();
-        addFriend.Content.WeChatId=UserInfo.weChatId;
-        addFriend.Content.Phones=new String[]{content};
-        addFriend.Content.TaskId=4;
-        addFriend.Content.message="你好玩一哈";
-        addFriend.Content.Remark="fri";
-        WebSocketHandler.getDefault().send(JSON.toJSONString(addFriend));
-        MyLog.e("send"+JSON.toJSONString(addFriend));
+        String[] phones=new String[]{content};
+        String addFriend = ReqEntity.getBuilder()
+                .setMsgType(ChatMsgType.AddFriendsTask)
+                .setWeChatId(UserInfo.weChatId)
+                .setPhones(phones)
+                .setTaskId(4)
+                .setMessage("你好")
+                .setRemark("friend")
+                .buildJsonToString();
+        WebSocketHandler.getDefault().send(addFriend);
     }
 
     @Override

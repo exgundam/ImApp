@@ -12,11 +12,10 @@ import com.ahuo.tool.util.ToastUtil;
 import com.alibaba.fastjson.JSON;
 import com.kk2.user.R;
 import com.kk2.user.base.BaseActivity;
-import com.kk2.user.base.BaseChatReq;
 import com.kk2.user.base.BaseChatRsp;
 import com.kk2.user.core.ChatMsgType;
-import com.kk2.user.entity.request.Content;
 import com.kk2.user.entity.other.MessageChatEntity;
+import com.kk2.user.entity.request.ReqEntity;
 import com.kk2.user.entity.response.ChatRoomMembersBean;
 import com.kk2.user.entity.response.ChatRoomMembersRsp;
 import com.kk2.user.entity.response.ChatRoomPushRsp;
@@ -72,7 +71,7 @@ public class MainActivity extends BaseActivity {
         mTabHost.setup(this, getSupportFragmentManager(), R.id.tabContent);
         for (int i = 0; i < mClassFragments.length; i++) {
             TabHost.TabSpec tabSpec = mTabHost.newTabSpec(mStrTab[i]).setIndicator(getTabView(i));
-            mTabHost.addTab(tabSpec, mClassFragments[i],null);
+            mTabHost.addTab(tabSpec, mClassFragments[i], null);
         }
         mTabHost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         getGroupMessage();
@@ -80,13 +79,14 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    private void getGroupMessage(){
-        BaseChatReq getChatGroup = new BaseChatReq();
-        getChatGroup.MsgType = ChatMsgType.TriggerChatroomPushTask;
-        getChatGroup.Content = new Content();
-        getChatGroup.Content.WeChatId = UserInfo.weChatId;
-        WebSocketHandler.getDefault().send(JSON.toJSONString(getChatGroup));
+    private void getGroupMessage() {
+        String getChatGroup = ReqEntity.getBuilder()
+                .setMsgType(ChatMsgType.TriggerChatroomPushTask)
+                .setWeChatId(UserInfo.weChatId)
+                .buildJsonToString();
+        WebSocketHandler.getDefault().send(getChatGroup);
     }
+
     private MyTabView getTabView(int position) {
         MyTabView tabView = new MyTabView(this);
         tabView.setImageResource(mIRTab[position]).setTextContent(mStrTab[position]);
@@ -133,14 +133,16 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         WebSocketHandler.getDefault().removeListener(socketListener);
     }
+
     private int test;
+
     private void receiveMsg(FriendTalkRsp rsp) {
         MessageChatEntity messageBean = new MessageChatEntity();
         messageBean.setDate(new SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date()));
         messageBean.setMsg(MyUtils.Base64DecodeUtf8(rsp.getContent()));
         messageBean.setType(1);
         messageBean.setState(0);
-        MyTabView view= (MyTabView) mTabHost.getTabWidget().getChildTabViewAt(0);
+        MyTabView view = (MyTabView) mTabHost.getTabWidget().getChildTabViewAt(0);
         if (!rsp.getFriendId().equals(UserInfo.inChatId)) {
             view.setTipCount(++test);
         }
@@ -175,20 +177,20 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public <T> void onMessage(String message, T data) {
-            MyLog.e("onMessage(String, T):"+message.replace("\\n", "").replace("\\", ""));
+            // MyLog.e("onMessage(String, T):"+message.replace("\\n", "").replace("\\", ""));
             BaseChatRsp baseResponse = JSON.parseObject(message, BaseChatRsp.class);
             if (baseResponse.msgType.equals(ChatMsgType.FriendTalkNotice)) {
-                FriendTalkRsp rsp = JSON.parseObject(baseResponse.message,FriendTalkRsp.class);
+                FriendTalkRsp rsp = JSON.parseObject(baseResponse.message, FriendTalkRsp.class);
                 receiveMsg(rsp);
-            }else if (baseResponse.msgType.equals(ChatMsgType.ChatroomPushNotice)){
-                ChatRoomPushRsp chatRoomPushRsp=JSON.parseObject(baseResponse.message, ChatRoomPushRsp.class);
-                for (ChatRoomsBean chatRoomsBean:chatRoomPushRsp.getChatRooms()){
-                    UserInfo.chatRoomsBeanHashMap.put(chatRoomsBean.getUserName(),chatRoomsBean);
+            } else if (baseResponse.msgType.equals(ChatMsgType.ChatroomPushNotice)) {
+                ChatRoomPushRsp chatRoomPushRsp = JSON.parseObject(baseResponse.message, ChatRoomPushRsp.class);
+                for (ChatRoomsBean chatRoomsBean : chatRoomPushRsp.getChatRooms()) {
+                    UserInfo.chatRoomsBeanHashMap.put(chatRoomsBean.getUserName(), chatRoomsBean);
                 }
-            }else if (baseResponse.msgType.equals(ChatMsgType.ChatRoomMembersNotice)){
-                ChatRoomMembersRsp chatRoomMembersRsp=JSON.parseObject(baseResponse.message, ChatRoomMembersRsp.class);
-                for (ChatRoomMembersBean chatRoomMembersBean:chatRoomMembersRsp.getMembers()){
-                    UserInfo.ChatRoomMemBerBeanHashMap.put(chatRoomMembersBean.getWxid(),chatRoomMembersBean);
+            } else if (baseResponse.msgType.equals(ChatMsgType.ChatRoomMembersNotice)) {
+                ChatRoomMembersRsp chatRoomMembersRsp = JSON.parseObject(baseResponse.message, ChatRoomMembersRsp.class);
+                for (ChatRoomMembersBean chatRoomMembersBean : chatRoomMembersRsp.getMembers()) {
+                    UserInfo.ChatRoomMemBerBeanHashMap.put(chatRoomMembersBean.getWxid(), chatRoomMembersBean);
                 }
             }
         }

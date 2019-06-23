@@ -23,6 +23,8 @@ public class Content {
     public Integer ContentType;//1
     public String Content;
     public Integer MsgId;
+    //friendCircle
+    public Long StartTime;
 
 
 }

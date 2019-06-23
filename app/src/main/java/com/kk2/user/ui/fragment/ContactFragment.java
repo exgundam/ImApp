@@ -156,10 +156,10 @@ public class ContactFragment extends BaseTitleFragment {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if (subscription != null) {
             subscription.unsubscribe();
         }
-        super.onDestroy();
     }
 
     @Override
@@ -177,4 +177,5 @@ public class ContactFragment extends BaseTitleFragment {
                 break;
         }
     }
+
 }

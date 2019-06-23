@@ -1,4 +1,4 @@
-package com.kk2.user.entity.request;
+package com.kk2.user.entity.response;
 
 public class DeviceAuthRspExtra {
     public String SupplierId;

@@ -35,6 +35,13 @@ public class PersonFragment extends BaseTitleFragment {
 
     @Override
     public void initData() {
+
+        /*String getCircle= ReqEntity.getBuilder()
+                .setMsgType(ChatMsgType.TriggerCirclePushTask)
+                .setWeChatId(UserInfo.weChatId)
+                .setStartTime(System.currentTimeMillis())
+                .buildJsonToString();
+        MyLog.e(getCircle);*/
         GlideLoaderUtil.loadNormalImage(getActivity(), AppConfig.APP_LOGO, GlideLoaderUtil.LOAD_IMAGE_DEFAULT_ID, mIvUserPhoto);
     }
 
